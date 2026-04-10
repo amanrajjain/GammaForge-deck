@@ -60,52 +60,7 @@
     transform: translateY(-24px);
   }
 
-  /* ── Navigation ─────────────────────────────────────────────────────── */
-  .nav {
-    position: fixed;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    z-index: 100;
-    background: rgba(15,32,64,0.8);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 999px;
-    padding: 0.6rem 1.2rem;
-  }
-
-  .nav-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.25);
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-  .nav-dot.active { background: var(--blue); transform: scale(1.3); }
-
-  .nav-btn {
-    background: none; border: none;
-    color: rgba(255,255,255,0.6);
-    cursor: pointer;
-    font-size: 1.1rem;
-    padding: 0.2rem 0.5rem;
-    transition: color 0.2s;
-    font-family: 'DM Sans', sans-serif;
-  }
-  .nav-btn:hover { color: white; }
-
-  .slide-counter {
-    color: rgba(255,255,255,0.4);
-    font-size: 0.75rem;
-    font-family: 'JetBrains Mono', monospace;
-    letter-spacing: 0.1em;
-    min-width: 40px;
-    text-align: center;
-  }
-
+  
   /* ── Keyboard hint ──────────────────────────────────────────────────── */
   .hint {
     position: fixed;
@@ -1027,7 +982,7 @@
           <div class="roi-row odd"><span class="roi-label">Total hours freed annually</span><span class="roi-val">1,600–3,200 hrs</span></div>
           <div class="roi-row even"><span class="roi-label">At $300/hr billing rate</span><span class="roi-val">$480K–$960K</span></div>
           <div class="roi-row highlight-blue"><span class="roi-label bold">That's capacity for 25–40 more deals</span><span class="roi-val blue">pure upside</span></div>
-          <div class="roi-row odd"><span class="roi-label bold">Break-even</span><span class="roi-val blue"> <1 extra deal/month</span></div>
+          <div class="roi-row odd"><span class="roi-label bold">Break-even</span><span class="roi-val blue"> <1 deal/month</span></div>
         </div>
       </div>
 
@@ -1035,7 +990,7 @@
         <div class="price-box">
           <div class="price-amount">$10K</div>
           <div class="price-period">PER MONTH · FLAT</div>
-          <div class="price-detail">unlimited runs · one firm key</div>
+          <div class="price-detail">unlimited runs · unlimited issuers · unlimited users</div>
         </div>
       </div>
 
@@ -1047,7 +1002,7 @@
           <div class="roi-row odd"><span class="roi-label">Hours saved per event</span><span class="roi-val">4–7 hrs</span></div>
           <div class="roi-row even"><span class="roi-label">Total GP time freed</span><span class="roi-val">160–560 hrs</span></div>
           <div class="roi-row highlight-green"><span class="roi-label bold">At $400/hr GP time</span><span class="roi-val green">$640K–$2240K</span></div>
-          <div class="roi-row odd"><span class="roi-label bold">Break-even</span><span class="roi-val green">&lt; <1 deal</span></div>
+          <div class="roi-row odd"><span class="roi-label bold">Break-even</span><span class="roi-val green">&lt; 1 deal</span></div>
         </div>
       </div>
     </div>
