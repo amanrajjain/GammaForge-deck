@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GammaForge — Private Company Equity Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:   #0f2040;
+    --mid:    #1a4b8c;
+    --blue:   #2563eb;
+    --ice:    #dbeafe;
+    --pale:   #eff6ff;
+    --green:  #059669;
+    --mint:   #d1fae5;
+    --amber:  #d97706;
+    --gold:   #fef3c7;
+    --white:  #ffffff;
+    --slate:  #475569;
+    --muted:  #94a3b8;
+    --ink:    #0f172a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--ink);
+    overflow: hidden;
+  }
+
+  /* ── Deck container ─────────────────────────────────────────────────── */
+  .deck {
+    width: 100vw; height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s cubic-bezier(0.4,0,0.2,1),
+                transform 0.6s cubic-bezier(0.4,0,0.2,1);
+    transform: translateY(24px);
+  }
+
+  .slide.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0);
+  }
+
+  .slide.exit {
+    opacity: 0;
+    transform: translateY(-24px);
+  }
+
+  /* ── Navigation ─────────────────────────────────────────────────────── */
+  .nav {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    z-index: 100;
+    background: rgba(15,32,64,0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 999px;
+    padding: 0.6rem 1.2rem;
+  }
+
+  .nav-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .nav-dot.active { background: var(--blue); transform: scale(1.3); }
+
+  .nav-btn {
+    background: none; border: none;
+    color: rgba(255,255,255,0.6);
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0.2rem 0.5rem;
+    transition: color 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .nav-btn:hover { color: white; }
+
+  .slide-counter {
+    color: rgba(255,255,255,0.4);
+    font-size: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.1em;
+    min-width: 40px;
+    text-align: center;
+  }
+
+  /* ── Keyboard hint ──────────────────────────────────────────────────── */
+  .hint {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    color: rgba(255,255,255,0.2);
+    font-size: 0.7rem;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.08em;
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     SLIDE 1 — TITLE
+  ══════════════════════════════════════════════════════════════════════ */
+  #s1 {
+    background: var(--navy);
+    display: grid;
+    grid-template-rows: 1fr auto;
+  }
+
+  .s1-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 80% 20%, rgba(37,99,235,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 10% 80%, rgba(5,150,105,0.08) 0%, transparent 50%);
+  }
+
+  .s1-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  }
+
+  .s1-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 8vw;
+    height: 100%;
+  }
+
+  .s1-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--blue);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.3s forwards;
+  }
+
+  .s1-logo {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.5s forwards;
+  }
+
+  .s1-gamma {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(4rem, 8vw, 7rem);
+    color: var(--blue);
+    line-height: 1;
+  }
+
+  .s1-wordmark {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(4rem, 8vw, 7rem);
+    color: var(--white);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .s1-tagline {
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    color: var(--muted);
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.7s forwards;
+  }
+
+  .s1-pillars {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    max-width: 680px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.9s forwards;
+  }
+
+  .s1-pillar {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 1.2rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+
+  .s1-pillar::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--blue);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s;
+  }
+
+  .s1-pillar:hover::before { transform: scaleX(1); }
+  .s1-pillar:hover { background: rgba(37,99,235,0.08); }
+
+  .s1-pillar-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 0.3rem;
+    letter-spacing: 0.02em;
+  }
+
+  .s1-pillar-sub {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .s1-features {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 1.2rem 8vw;
+    background: rgba(255,255,255,0.03);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    opacity: 0;
+    animation: fadeUp 0.8s 1.1s forwards;
+  }
+
+  .s1-feature {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .s1-feature::before {
+    content: '';
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--blue);
+    flex-shrink: 0;
+  }
+
+  .s1-badge {
+    position: absolute;
+    top: 2rem; right: 8vw;
+    background: rgba(37,99,235,0.15);
+    border: 1px solid rgba(37,99,235,0.3);
+    border-radius: 4px;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.7rem;
+    color: var(--ice);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.1em;
+    opacity: 0;
+    animation: fadeUp 0.8s 1.3s forwards;
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     SLIDE 2 — WHAT
+  ══════════════════════════════════════════════════════════════════════ */
+  #s2 {
+    background: #f8fafc;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .s2-header {
+    background: var(--navy);
+    padding: 1.8rem 8vw;
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  .slide-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--blue);
+    text-transform: uppercase;
+  }
+
+  .slide-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    color: var(--white);
+    letter-spacing: -0.01em;
+  }
+
+  .s2-body {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 80px 1fr;
+    gap: 0;
+    padding: 2rem 8vw;
+    align-items: start;
+  }
+
+  .compare-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .compare-header {
+    padding: 0.8rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-radius: 4px 4px 0 0;
+    margin-bottom: 0.3rem;
+  }
+
+  .compare-header.red { background: #dc2626; color: white; }
+  .compare-header.green { background: var(--green); color: white; }
+
+  .compare-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: 0.65rem 1rem;
+    border-radius: 3px;
+    font-size: 0.82rem;
+    transition: transform 0.2s;
+  }
+
+  .compare-row:hover { transform: translateX(3px); }
+  .compare-row.odd { background: white; }
+  .compare-row.even { background: #f1f5f9; }
+  .compare-row.odd-g { background: white; }
+  .compare-row.even-g { background: #f0fdf4; }
+
+  .compare-task { color: var(--slate); }
+  .compare-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  .time-red { background: #fef2f2; color: #dc2626; }
+  .time-green { background: #d1fae5; color: var(--green); }
+  .time-blue { background: #dbeafe; color: var(--blue); }
+
+  .compare-total {
+    margin-top: 0.5rem;
+    padding: 0.8rem 1rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border-radius: 3px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .total-red { background: #dc2626; color: white; }
+  .total-green { background: var(--green); color: white; }
+
+  .arrow-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 3rem;
+  }
+
+  .arrow-circle {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.4rem;
+    box-shadow: 0 4px 20px rgba(15,32,64,0.25);
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     SLIDE 3 — WHY
+  ══════════════════════════════════════════════════════════════════════ */
+  #s3 {
+    background: var(--navy);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .s3-header {
+    padding: 2rem 8vw 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .s3-body {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: rgba(255,255,255,0.06);
+    margin: 0 8vw 1.5rem;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .why-card {
+    background: rgba(255,255,255,0.04);
+    padding: 2rem 1.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    transition: background 0.3s;
+  }
+
+  .why-card:hover { background: rgba(255,255,255,0.07); }
+
+  .why-num {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .why-num.blue { background: var(--blue); color: white; }
+  .why-num.green { background: var(--green); color: white; }
+  .why-num.amber { background: var(--amber); color: white; }
+
+  .why-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.15rem;
+    color: var(--white);
+    line-height: 1.3;
+  }
+
+  .why-points {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .why-points li {
+    font-size: 0.82rem;
+    color: rgba(219,234,254,0.75);
+    padding-left: 1rem;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  .why-points li::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    color: var(--blue);
+    font-weight: 700;
+  }
+
+  .why-card:nth-child(2) .why-points li::before { color: var(--green); }
+  .why-card:nth-child(3) .why-points li::before { color: var(--amber); }
+
+  .s3-footer {
+    margin: 0 8vw 1.5rem;
+    background: var(--blue);
+    border-radius: 6px;
+    padding: 1rem 2rem;
+    text-align: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    font-style: italic;
+    color: white;
+    letter-spacing: 0.01em;
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     SLIDE 4 — WHO
+  ══════════════════════════════════════════════════════════════════════ */
+  #s4 {
+    background: #f8fafc;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .s4-header {
+    background: var(--navy);
+    padding: 1.8rem 8vw;
+  }
+
+  .s4-body {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    padding: 2rem 8vw;
+  }
+
+  .who-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 20px rgba(15,32,64,0.08);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .who-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 40px rgba(15,32,64,0.15);
+  }
+
+  .who-accent {
+    height: 4px;
+  }
+  .accent-blue { background: var(--blue); }
+  .accent-green { background: var(--green); }
+  .accent-amber { background: var(--amber); }
+
+  .who-body {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .who-type {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    color: var(--navy);
+  }
+
+  .who-freq {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  .who-divider {
+    height: 1px;
+    background: #e2e8f0;
+  }
+
+  .who-uses {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+  }
+
+  .who-uses li {
+    font-size: 0.82rem;
+    color: var(--slate);
+    padding-left: 1rem;
+    position: relative;
+    line-height: 1.4;
+  }
+
+  .who-uses li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    font-size: 0.7rem;
+  }
+
+  .who-card:nth-child(1) .who-uses li::before { color: var(--blue); }
+  .who-card:nth-child(2) .who-uses li::before { color: var(--green); }
+  .who-card:nth-child(3) .who-uses li::before { color: var(--amber); }
+
+  .who-stat {
+    margin-top: auto;
+    padding: 0.8rem 1rem;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .stat-blue { background: var(--pale); }
+  .stat-green { background: #f0fdf4; }
+  .stat-amber { background: #fffbeb; }
+
+  .who-stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+  }
+  .c-blue { color: var(--blue); }
+  .c-green { color: var(--green); }
+  .c-amber { color: var(--amber); }
+
+  .who-stat-label {
+    font-size: 0.68rem;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     SLIDE 5 — PRICING
+  ══════════════════════════════════════════════════════════════════════ */
+  #s5 {
+    background: var(--navy);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .s5-header {
+    padding: 2rem 8vw 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .s5-body {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 2rem;
+    padding: 1.5rem 8vw;
+    align-items: start;
+  }
+
+  .roi-card {
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .roi-header {
+    padding: 0.9rem 1.2rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .roi-header.blue { background: var(--blue); color: white; }
+  .roi-header.green { background: var(--green); color: white; }
+
+  .roi-rows {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .roi-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.82rem;
+    align-items: center;
+  }
+
+  .roi-row.odd { background: rgba(255,255,255,0.04); }
+  .roi-row.even { background: rgba(255,255,255,0.02); }
+  .roi-row.highlight-blue { background: rgba(37,99,235,0.15); }
+  .roi-row.highlight-green { background: rgba(5,150,105,0.15); }
+
+  .roi-label { color: rgba(255,255,255,0.65); }
+  .roi-label.bold { color: white; font-weight: 600; }
+
+  .roi-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: white;
+  }
+
+  .roi-val.blue { color: #93c5fd; }
+  .roi-val.green { color: #6ee7b7; }
+
+  .price-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding-top: 1rem;
+  }
+
+  .price-box {
+    background: var(--amber);
+    border-radius: 8px;
+    padding: 1.5rem 1.8rem;
+    text-align: center;
+    box-shadow: 0 8px 40px rgba(217,119,6,0.35);
+  }
+
+  .price-amount {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.8rem;
+    color: white;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .price-period {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.85);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    margin-top: 0.3rem;
+  }
+
+  .price-detail {
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.65);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+    margin-top: 0.2rem;
+  }
+
+  .price-arrow {
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+
+  .s5-cta {
+    margin: 0 8vw 1.5rem;
+    background: var(--blue);
+    border-radius: 6px;
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .cta-left {
+    font-size: 0.9rem;
+    color: white;
+    font-weight: 600;
+  }
+
+  .cta-right {
+    font-size: 0.82rem;
+    color: var(--ice);
+    font-style: italic;
+    max-width: 55%;
+    text-align: right;
+    line-height: 1.4;
+  }
+
+  /* ── Shared typography helpers ──────────────────────────────────────── */
+  .label-mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--blue);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .title-serif {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    color: var(--white);
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+  }
+
+  /* ── Animations ─────────────────────────────────────────────────────── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .slide.active .animate {
+    animation: fadeUp 0.6s forwards;
+  }
+
+  .slide.active .animate-1 { animation: fadeUp 0.6s 0.1s forwards; opacity: 0; }
+  .slide.active .animate-2 { animation: fadeUp 0.6s 0.25s forwards; opacity: 0; }
+  .slide.active .animate-3 { animation: fadeUp 0.6s 0.4s forwards; opacity: 0; }
+  .slide.active .animate-4 { animation: fadeUp 0.6s 0.55s forwards; opacity: 0; }
+  .slide.active .animate-5 { animation: fadeUp 0.6s 0.7s forwards; opacity: 0; }
+</style>
+</head>
+<body>
+
+<div class="deck">
+
+  <!-- ══ SLIDE 1: TITLE ══════════════════════════════════════════════════ -->
+  <div class="slide active" id="s1">
+    <div class="s1-bg"></div>
+    <div class="s1-grid"></div>
+    <div class="s1-badge">PRIVATE BETA</div>
+    <div class="s1-content">
+      <div class="s1-eyebrow">Private Company Equity Intelligence</div>
+      <div class="s1-logo">
+        <span class="s1-gamma">Γ</span>
+        <span class="s1-wordmark">GammaForge</span>
+      </div>
+      <div class="s1-tagline">From cap table to client-ready allocation in under 60 seconds</div>
+      <div class="s1-pillars">
+        <div class="s1-pillar">
+          <div class="s1-pillar-label">409A & Fair Value</div>
+          <div class="s1-pillar-sub">Automated OPM allocation</div>
+        </div>
+        <div class="s1-pillar">
+          <div class="s1-pillar-label">PE / VC Portfolio</div>
+          <div class="s1-pillar-sub">Backsolve & exit modeling</div>
+        </div>
+        <div class="s1-pillar">
+          <div class="s1-pillar-label">Deal Structuring</div>
+          <div class="s1-pillar-sub">Pro-forma & round modeling</div>
+        </div>
+      </div>
+    </div>
+    <div class="s1-features">
+      <div class="s1-feature">OPM Allocation</div>
+      <div class="s1-feature">PWERM Scenarios</div>
+      <div class="s1-feature">Backsolve Engine</div>
+      <div class="s1-feature">Exit Waterfall</div>
+      <div class="s1-feature">Pro-Forma Modeling</div>
+      <div class="s1-feature">Memo Generator</div>
+      <div class="s1-feature">Audit Trail</div>
+      <div class="s1-feature" style="margin-left:auto; color: rgba(148,163,184,0.5);">Runs inside Excel · No new systems</div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 2: WHAT ════════════════════════════════════════════════════ -->
+  <div class="slide" id="s2">
+    <div class="s2-header animate-1">
+      <div>
+        <span class="label-mono">01 — What is it</span>
+        <h2 class="slide-title">The problem. The solution.</h2>
+      </div>
+    </div>
+    <div class="s2-body">
+      <div class="compare-col animate-2">
+        <div class="compare-header red">TODAY — Manual, Slow, Fragile</div>
+        <div class="compare-row odd"><span class="compare-task">OPM model built from scratch</span><span class="compare-time time-red">2–3 hrs</span></div>
+        <div class="compare-row even"><span class="compare-task">Backsolve via Goal Seek</span><span class="compare-time time-red">45 min</span></div>
+        <div class="compare-row odd"><span class="compare-task">Breakpoint descriptions by hand</span><span class="compare-time time-red">30 min</span></div>
+        <div class="compare-row even"><span class="compare-task">Memo drafted from blank doc</span><span class="compare-time time-red">1–2 hrs</span></div>
+        <div class="compare-row odd"><span class="compare-task">Review iterations & rebuilds</span><span class="compare-time time-red">1–2 hrs</span></div>
+        <div class="compare-row even"><span class="compare-task">No audit trail</span><span class="compare-time time-red">ongoing risk</span></div>
+        <div class="compare-total total-red"><span>Total per engagement</span><span>5–8 hours</span></div>
+      </div>
+
+      <div class="arrow-col animate-3">
+        <div class="arrow-circle">→</div>
+      </div>
+
+      <div class="compare-col animate-4">
+        <div class="compare-header green">GAMMAFORGE — One Click</div>
+        <div class="compare-row odd-g"><span class="compare-task">OPM allocation matrix</span><span class="compare-time time-green">&lt; 1 min</span></div>
+        <div class="compare-row even-g"><span class="compare-task">Backsolve to observed transaction</span><span class="compare-time time-green">&lt; 1 min</span></div>
+        <div class="compare-row odd-g"><span class="compare-task">PWERM probability-weighted scenarios</span><span class="compare-time time-green">&lt; 1 min</span></div>
+        <div class="compare-row even-g"><span class="compare-task">Exit waterfall at any exit value</span><span class="compare-time time-blue">instant</span></div>
+        <div class="compare-row odd-g"><span class="compare-task">Pro-forma with SAFE conversion</span><span class="compare-time time-blue">instant</span></div>
+        <div class="compare-row even-g"><span class="compare-task">Memo draft — 8 sections, 409A language</span><span class="compare-time time-green">&lt; 1 min</span></div>
+        <div class="compare-row odd-g"><span class="compare-task">Audit trail — timestamped, locked</span><span class="compare-time time-blue">automatic</span></div>
+        <div class="compare-total total-green"><span>Total</span><span>Under 5 minutes</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 3: WHY ══════════════════════════════════════════════════════ -->
+  <div class="slide" id="s3">
+    <div class="s3-header animate-1">
+      <span class="label-mono">02 — Why different</span>
+      <h2 class="title-serif">Built for how valuation actually works</h2>
+    </div>
+    <div class="s3-body">
+      <div class="why-card animate-2">
+        <div class="why-num blue">1</div>
+        <div class="why-title">Audit-Defensible<br>by Design</div>
+        <ul class="why-points">
+          <li>Every run logged: timestamp, inputs, user — locked</li>
+          <li>Breakpoints auto-described from cap table logic</li>
+          <li>8-section memo with correct 409A language</li>
+          <li>Sensitivity tables for reviewer confidence</li>
+          <li>Input snapshot on every run — reproducible</li>
+        </ul>
+      </div>
+      <div class="why-card animate-3">
+        <div class="why-num green">2</div>
+        <div class="why-title">Handles Real-World<br>Complexity</div>
+        <ul class="why-points">
+          <li>Multiple LP seniority levels, participation caps</li>
+          <li>SAFEs at cap or discount — correct circular math</li>
+          <li>Warrants and options at different strikes</li>
+          <li>Dividend-bearing preferred with accrual</li>
+          <li>Multi-class basket backsolve</li>
+        </ul>
+      </div>
+      <div class="why-card animate-4">
+        <div class="why-num amber">3</div>
+        <div class="why-title">Integrates Into<br>Your Workflow</div>
+        <ul class="why-points">
+          <li>Two sheets copy into any existing Excel model</li>
+          <li>Your OPM Calc and waterfall link automatically</li>
+          <li>One button — everything else updates</li>
+          <li>No new systems, no IT, no training required</li>
+          <li>Works across 409A, PE portfolio, deal structuring</li>
+        </ul>
+      </div>
+    </div>
+    <div class="s3-footer animate-5">
+      "The math hasn't changed. The model structure hasn't changed. The time it takes has."
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 4: WHO ══════════════════════════════════════════════════════ -->
+  <div class="slide" id="s4">
+    <div class="s4-header animate-1">
+      <span class="label-mono">03 — Who uses it</span>
+      <h2 class="slide-title">One platform. Three use cases.</h2>
+    </div>
+    <div class="s4-body">
+      <div class="who-card animate-2">
+        <div class="who-accent accent-blue"></div>
+        <div class="who-body">
+          <div class="who-type">Valuation Firms</div>
+          <div class="who-freq">EVERY ENGAGEMENT</div>
+          <div class="who-divider"></div>
+          <ul class="who-uses">
+            <li>409A fair value opinions</li>
+            <li>OPM allocation in seconds</li>
+            <li>Backsolve to observed transactions</li>
+            <li>Audit trail + methodology memo</li>
+            <li>Sensitivity tables for reviewers</li>
+          </ul>
+          <div class="who-stat stat-blue">
+            <div class="who-stat-num c-blue">5–8 hrs → 5 min</div>
+            <div class="who-stat-label">PER ENGAGEMENT</div>
+          </div>
+        </div>
+      </div>
+      <div class="who-card animate-3">
+        <div class="who-accent accent-green"></div>
+        <div class="who-body">
+          <div class="who-type">PE / VC Funds</div>
+          <div class="who-freq">QUARTERLY + DEAL-TIME</div>
+          <div class="who-divider"></div>
+          <ul class="who-uses">
+            <li>Portfolio fair value monitoring</li>
+            <li>Exit waterfall at any exit value</li>
+            <li>PWERM scenario modeling</li>
+            <li>Dilution analysis for new rounds</li>
+            <li>Multi-class basket backsolve</li>
+          </ul>
+          <div class="who-stat stat-green">
+            <div class="who-stat-num c-green">4–7 hrs → 5 min</div>
+            <div class="who-stat-label">PER PORTFOLIO COMPANY</div>
+          </div>
+        </div>
+      </div>
+      <div class="who-card animate-4">
+        <div class="who-accent accent-amber"></div>
+        <div class="who-body">
+          <div class="who-type">CFO / Finance Teams</div>
+          <div class="who-freq">AD HOC & BOARD CYCLES</div>
+          <div class="who-divider"></div>
+          <ul class="who-uses">
+            <li>What exit value for 3x return?</li>
+            <li>LP overhang and coverage analysis</li>
+            <li>Pro-forma: new round with SAFEs</li>
+            <li>Option pool dilution impact</li>
+            <li>409A FMV for equity award grants</li>
+          </ul>
+          <div class="who-stat stat-amber">
+            <div class="who-stat-num c-amber">Days → Minutes</div>
+            <div class="who-stat-label">FOR BOARD-READY ANALYSIS</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 5: PRICING ══════════════════════════════════════════════════ -->
+  <div class="slide" id="s5">
+    <div class="s5-header animate-1">
+      <span class="label-mono">04 — Pricing</span>
+      <h2 class="title-serif">Simple pricing. Immediate ROI.</h2>
+    </div>
+    <div class="s5-body">
+      <div class="roi-card animate-2">
+        <div class="roi-header blue">For Valuation Firms</div>
+        <div class="roi-rows">
+          <div class="roi-row odd"><span class="roi-label">Engagements per year</span><span class="roi-val">200+</span></div>
+          <div class="roi-row even"><span class="roi-label">Hours saved per engagement</span><span class="roi-val">5–8 hrs</span></div>
+          <div class="roi-row odd"><span class="roi-label">Total hours freed annually</span><span class="roi-val">1,000–1,600 hrs</span></div>
+          <div class="roi-row even"><span class="roi-label">At $300/hr billing rate</span><span class="roi-val">$300K–$480K</span></div>
+          <div class="roi-row highlight-blue"><span class="roi-label bold">That's capacity for 15–25 more deals</span><span class="roi-val blue">pure upside</span></div>
+          <div class="roi-row odd"><span class="roi-label bold">Break-even</span><span class="roi-val blue">1 extra deal/month</span></div>
+        </div>
+      </div>
+
+      <div class="price-center animate-3">
+        <div class="price-box">
+          <div class="price-amount">$10K</div>
+          <div class="price-period">PER MONTH · FLAT</div>
+          <div class="price-detail">unlimited runs · one firm key</div>
+        </div>
+      </div>
+
+      <div class="roi-card animate-4">
+        <div class="roi-header green">For PE / VC Funds</div>
+        <div class="roi-rows">
+          <div class="roi-row odd"><span class="roi-label">Portfolio companies</span><span class="roi-val">10–20</span></div>
+          <div class="roi-row even"><span class="roi-label">Reviews + deal events / year</span><span class="roi-val">40–80</span></div>
+          <div class="roi-row odd"><span class="roi-label">Hours saved per event</span><span class="roi-val">4–7 hrs</span></div>
+          <div class="roi-row even"><span class="roi-label">Total GP time freed</span><span class="roi-val">160–560 hrs</span></div>
+          <div class="roi-row highlight-green"><span class="roi-label bold">At $400/hr GP time</span><span class="roi-val green">$64K–$224K</span></div>
+          <div class="roi-row odd"><span class="roi-label bold">Break-even</span><span class="roi-val green">&lt; 1 deal</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="s5-cta animate-5">
+      <div class="cta-left">30-day pilot</div>
+      <div class="cta-right">Run it on your live portfolio. If it doesn't deliver, we part ways. No long-term commitment required.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<nav class="nav">
+  <button class="nav-btn" onclick="changeSlide(-1)">←</button>
+  <div class="nav-dot active" onclick="goTo(0)"></div>
+  <div class="nav-dot" onclick="goTo(1)"></div>
+  <div class="nav-dot" onclick="goTo(2)"></div>
+  <div class="nav-dot" onclick="goTo(3)"></div>
+  <div class="nav-dot" onclick="goTo(4)"></div>
+  <button class="nav-btn" onclick="changeSlide(1)">→</button>
+  <span class="slide-counter" id="counter">01 / 05</span>
+</nav>
+
+<div class="hint">← → arrow keys to navigate</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.querySelectorAll('.nav-dot');
+  const counter = document.getElementById('counter');
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    slides[current].classList.add('exit');
+    setTimeout(() => slides[current].classList.remove('exit'), 600);
+    dots[current].classList.remove('active');
+    current = n;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+    counter.textContent = String(current + 1).padStart(2,'0') + ' / 05';
+  }
+
+  function changeSlide(dir) {
+    const next = (current + dir + slides.length) % slides.length;
+    goTo(next);
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   changeSlide(-1);
+  });
+</script>
+</body>
+</html>
