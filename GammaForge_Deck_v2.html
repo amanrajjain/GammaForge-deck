@@ -1,0 +1,1880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GammaForge — The Equity Intelligence Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:      #0a0e1a;
+    --ink-2:    #131829;
+    --paper:    #fafaf7;
+    --paper-2:  #f0eee6;
+    --navy:     #1a2847;
+    --blue:     #2c5fd6;
+    --blue-2:   #4a7eea;
+    --ice:      #cfdcf6;
+    --gold:     #c89b3c;
+    --gold-2:   #e8b860;
+    --sage:     #7a9b76;
+    --rust:     #c4633c;
+    --slate:    #5a6478;
+    --slate-2:  #8a93a8;
+    --bone:     #ebe6d8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%;
+    font-family: 'Manrope', sans-serif;
+    background: var(--ink);
+    overflow: hidden;
+    color: var(--paper);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Deck ─────────────────────────────────────────────────────────────── */
+  .deck {
+    width: 100vw; height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1),
+                transform 0.7s cubic-bezier(0.16,1,0.3,1);
+    transform: translateY(2rem) scale(0.99);
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0) scale(1);
+  }
+  .slide.exit {
+    opacity: 0;
+    transform: translateY(-2rem) scale(1.01);
+  }
+
+  /* ── Nav ──────────────────────────────────────────────────────────────── */
+  .nav {
+    position: fixed;
+    bottom: 1.5rem; left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    z-index: 100;
+    background: rgba(10,14,26,0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 100px;
+    padding: 0.5rem 1.4rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+  }
+  .nav-btn {
+    background: none; border: none;
+    color: rgba(255,255,255,0.5);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0.2rem 0.6rem;
+    transition: all 0.2s;
+    font-family: inherit;
+    border-radius: 50%;
+  }
+  .nav-btn:hover { color: white; background: rgba(255,255,255,0.08); }
+  .nav-dots {
+    display: flex; gap: 0.4rem;
+  }
+  .nav-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .nav-dot.active {
+    background: var(--gold);
+    transform: scale(1.6);
+    box-shadow: 0 0 12px rgba(200,155,60,0.6);
+  }
+  .nav-counter {
+    color: rgba(255,255,255,0.4);
+    margin-left: 0.5rem;
+    min-width: 2.5rem;
+    text-align: center;
+  }
+  .hint {
+    position: fixed;
+    top: 1.5rem; right: 1.5rem;
+    color: rgba(255,255,255,0.18);
+    font-size: 0.65rem;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    z-index: 100;
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     SLIDE 1 — TITLE / EDITORIAL COVER
+  ══════════════════════════════════════════════════════════════════════════ */
+  #s1 {
+    background: var(--ink);
+    overflow: hidden;
+  }
+
+  .s1-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 80% 20%, rgba(44,95,214,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 10% 90%, rgba(200,155,60,0.12) 0%, transparent 50%);
+  }
+  .s1-grain {
+    position: absolute; inset: 0;
+    opacity: 0.4;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .s1-grid-bg {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
+  }
+
+  .s1-content {
+    position: relative; z-index: 2;
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 3rem 5vw;
+  }
+
+  .s1-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .s1-mark {
+    display: flex; gap: 0.6rem; align-items: center;
+  }
+  .s1-mark-glyph {
+    width: 14px; height: 14px;
+    background: var(--gold);
+    border-radius: 50%;
+    box-shadow: 0 0 24px rgba(200,155,60,0.6);
+  }
+  .s1-mark-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    color: var(--ice);
+    text-transform: uppercase;
+  }
+  .s1-meta {
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--slate-2);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    line-height: 1.6;
+  }
+
+  .s1-center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2rem;
+  }
+  .s1-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    opacity: 0;
+    animation: rise 1s 0.2s forwards;
+  }
+  .s1-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(3rem, 8vw, 7rem);
+    font-weight: 500;
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    color: var(--paper);
+    opacity: 0;
+    animation: rise 1s 0.4s forwards;
+  }
+  .s1-title em {
+    font-style: italic;
+    color: var(--gold);
+    font-weight: 400;
+  }
+  .s1-sub {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--ice);
+    max-width: 720px;
+    line-height: 1.4;
+    opacity: 0;
+    animation: rise 1s 0.6s forwards;
+  }
+
+  .s1-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 1.5rem;
+    opacity: 0;
+    animation: rise 1s 1s forwards;
+  }
+  .s1-stats {
+    display: flex;
+    gap: 4rem;
+  }
+  .s1-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .s1-stat-num {
+    font-family: 'Fraunces', serif;
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: var(--paper);
+    line-height: 1;
+  }
+  .s1-stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    color: var(--slate-2);
+    text-transform: uppercase;
+  }
+  .s1-cta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--ice);
+    text-transform: uppercase;
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 0.7rem 1.4rem;
+    border-radius: 100px;
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(8px);
+  }
+  .s1-cta::before {
+    content: '→ ';
+    color: var(--gold);
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     SLIDE 2 — THE PROBLEM (cinematic)
+  ══════════════════════════════════════════════════════════════════════════ */
+  #s2 {
+    background: var(--ink);
+  }
+  .s2-content {
+    position: relative;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  .s2-left {
+    background: var(--ink-2);
+    padding: 4rem 4vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2rem;
+    border-right: 1px solid rgba(255,255,255,0.06);
+  }
+  .s2-right {
+    padding: 4rem 4vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2rem;
+  }
+
+  .s2-section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+  .s2-headline {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--paper);
+  }
+  .s2-headline em { font-style: italic; color: var(--gold); }
+
+  .s2-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .s2-item {
+    display: grid;
+    grid-template-columns: 60px 1fr auto;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    align-items: center;
+  }
+  .s2-item-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--slate-2);
+    letter-spacing: 0.1em;
+  }
+  .s2-item-text {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.95rem;
+    color: var(--ice);
+    font-weight: 400;
+  }
+  .s2-item-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--rust);
+    letter-spacing: 0.05em;
+    background: rgba(196,99,60,0.12);
+    padding: 0.3rem 0.7rem;
+    border-radius: 4px;
+  }
+  .s2-right .s2-item-time {
+    color: var(--sage);
+    background: rgba(122,155,118,0.12);
+  }
+
+  .s2-total {
+    margin-top: 1.5rem;
+    padding: 1.2rem 1.5rem;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .s2-total-red {
+    background: linear-gradient(135deg, rgba(196,99,60,0.2), rgba(196,99,60,0.08));
+    border: 1px solid rgba(196,99,60,0.3);
+  }
+  .s2-total-green {
+    background: linear-gradient(135deg, rgba(122,155,118,0.2), rgba(122,155,118,0.08));
+    border: 1px solid rgba(122,155,118,0.3);
+  }
+  .s2-total-label {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ice);
+    font-weight: 500;
+  }
+  .s2-total-val {
+    font-family: 'Fraunces', serif;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--paper);
+  }
+
+  .s2-divider-mark {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    background: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink);
+    font-family: 'Fraunces', serif;
+    font-size: 1.6rem;
+    font-weight: 600;
+    box-shadow: 0 0 80px rgba(200,155,60,0.4),
+                inset 0 0 20px rgba(255,255,255,0.2);
+    z-index: 5;
+    border: 1px solid var(--gold-2);
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     SLIDE 3 — INTERACTIVE OPM ENGINE
+  ══════════════════════════════════════════════════════════════════════════ */
+  #s3 {
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .s3-content {
+    position: relative;
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    padding: 2.5rem 4vw;
+    gap: 1.5rem;
+  }
+  .s3-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding-bottom: 1rem;
+  }
+  .s3-title-block { max-width: 70%; }
+  .s3-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+  .s3-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.8rem, 2.8vw, 2.4rem);
+    font-weight: 500;
+    line-height: 1.1;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .s3-title em { font-style: italic; color: var(--blue); }
+
+  .s3-instruction {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--slate);
+    text-transform: uppercase;
+    text-align: right;
+    line-height: 1.5;
+  }
+  .s3-instruction strong { color: var(--blue); }
+
+  .s3-body {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 2rem;
+    overflow: hidden;
+  }
+
+  .s3-input-panel {
+    background: white;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 6px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .panel-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--slate);
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+  .input-grid {
+    display: grid;
+    grid-template-columns: 1fr 100px;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .input-grid label {
+    font-size: 0.85rem;
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .input-grid input {
+    width: 100%;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    text-align: right;
+    color: var(--ink);
+    background: var(--paper);
+  }
+  .input-grid input:focus {
+    outline: none;
+    border-color: var(--blue);
+    background: white;
+  }
+
+  .cap-table-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin-top: 0.5rem;
+  }
+  .cap-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 90px;
+    gap: 0.5rem;
+    align-items: center;
+    font-size: 0.75rem;
+  }
+  .cap-row-header {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--slate-2);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .cap-row input {
+    padding: 0.3rem 0.5rem;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    text-align: right;
+    background: var(--paper);
+  }
+  .cap-row label {
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .run-btn {
+    margin-top: 0.5rem;
+    padding: 0.9rem;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .run-btn:hover {
+    background: var(--blue);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(44,95,214,0.3);
+  }
+  .run-btn::before {
+    content: '▶ ';
+    color: var(--gold);
+  }
+  .run-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .s3-output-panel {
+    background: white;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 6px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .output-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding-bottom: 0.6rem;
+  }
+  .output-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .output-runtime {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--sage);
+    background: rgba(122,155,118,0.1);
+    padding: 0.2rem 0.6rem;
+    border-radius: 3px;
+  }
+  .output-empty {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--slate-2);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 1rem;
+  }
+  .output-table {
+    flex: 1;
+    overflow-y: auto;
+    font-size: 0.78rem;
+  }
+  .output-table table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .output-table th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--slate);
+    text-align: right;
+    padding: 0.6rem 0.5rem;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    background: var(--paper-2);
+    position: sticky;
+    top: 0;
+  }
+  .output-table th:first-child { text-align: left; }
+  .output-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--ink);
+  }
+  .output-table td:first-child {
+    text-align: left;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 500;
+    color: var(--navy);
+  }
+  .output-table tbody tr:hover { background: var(--paper-2); }
+  .output-table .highlight {
+    color: var(--blue);
+    font-weight: 600;
+  }
+
+  .output-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+  .summary-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .summary-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--slate-2);
+  }
+  .summary-value {
+    font-family: 'Fraunces', serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .summary-value.gold { color: var(--gold); }
+  .summary-value.blue { color: var(--blue); }
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     SLIDE 4 — INTERACTIVE EXIT WATERFALL
+  ══════════════════════════════════════════════════════════════════════════ */
+  #s4 {
+    background: var(--ink);
+  }
+  .s4-content {
+    position: relative;
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    padding: 2.5rem 4vw;
+    gap: 1.5rem;
+  }
+  .s4-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding-bottom: 1rem;
+  }
+  .s4-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.8rem, 2.8vw, 2.4rem);
+    font-weight: 500;
+    line-height: 1.1;
+    color: var(--paper);
+    letter-spacing: -0.02em;
+  }
+  .s4-title em { font-style: italic; color: var(--gold); }
+
+  .s4-body {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 1.5rem;
+    overflow: hidden;
+  }
+
+  .slider-section {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    padding: 1.5rem 2rem;
+  }
+  .slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 1rem;
+  }
+  .slider-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--slate-2);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .slider-value {
+    font-family: 'Fraunces', serif;
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .slider-track {
+    position: relative;
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+    margin: 1rem 0 0.5rem;
+  }
+  .slider-fill {
+    position: absolute;
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue), var(--gold));
+    border-radius: 2px;
+  }
+  .slider-input {
+    position: absolute;
+    top: -10px; left: 0; right: 0;
+    width: 100%;
+    height: 24px;
+    -webkit-appearance: none;
+    background: transparent;
+    cursor: pointer;
+  }
+  .slider-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 3px solid var(--ink);
+    box-shadow: 0 0 0 2px var(--gold), 0 4px 16px rgba(200,155,60,0.6);
+    cursor: grab;
+  }
+  .slider-marks {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--slate-2);
+    letter-spacing: 0.1em;
+  }
+
+  .waterfall-section {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    padding: 1.5rem 2rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .waterfall-table {
+    flex: 1;
+    overflow-y: auto;
+  }
+  .waterfall-row {
+    display: grid;
+    grid-template-columns: 220px 1fr 130px 110px;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .waterfall-class {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ice);
+    font-weight: 500;
+  }
+  .waterfall-bar-track {
+    height: 22px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+  }
+  .waterfall-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue) 0%, var(--blue-2) 100%);
+    border-radius: 3px;
+    transition: width 0.4s cubic-bezier(0.16,1,0.3,1);
+    position: relative;
+  }
+  .waterfall-bar-fill.preferred {
+    background: linear-gradient(90deg, var(--gold) 0%, var(--gold-2) 100%);
+  }
+  .waterfall-bar-fill.common {
+    background: linear-gradient(90deg, var(--sage) 0%, #95b58e 100%);
+  }
+  .waterfall-payout {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--paper);
+    text-align: right;
+    font-weight: 500;
+  }
+  .waterfall-pct {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--slate-2);
+    text-align: right;
+  }
+
+  .waterfall-totals {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .total-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .total-card-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--slate-2);
+  }
+  .total-card-val {
+    font-family: 'Fraunces', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--paper);
+  }
+  .total-card-val.gold { color: var(--gold); }
+  .total-card-val.sage { color: var(--sage); }
+  .total-card-val.blue { color: var(--blue-2); }
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     SLIDE 5 — VALUE & SCALE (the pitch)
+  ══════════════════════════════════════════════════════════════════════════ */
+  #s5 {
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .s5-content {
+    position: relative;
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    padding: 2.5rem 4vw;
+    gap: 1.5rem;
+  }
+  .s5-header {
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding-bottom: 1rem;
+  }
+  .s5-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2rem, 3.4vw, 3rem);
+    font-weight: 500;
+    line-height: 1.05;
+    color: var(--ink);
+    letter-spacing: -0.025em;
+  }
+  .s5-title em { font-style: italic; color: var(--blue); }
+  .s5-sub {
+    font-family: 'Fraunces', serif;
+    font-size: 1.05rem;
+    font-style: italic;
+    color: var(--slate);
+    margin-top: 0.4rem;
+    max-width: 800px;
+  }
+
+  .s5-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 6px;
+  }
+  .value-card {
+    padding: 2rem 1.8rem;
+    background: white;
+    border-right: 1px solid rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: relative;
+    transition: background 0.3s;
+  }
+  .value-card:last-child { border-right: none; }
+  .value-card:hover { background: var(--paper-2); }
+  .value-card-num {
+    font-family: 'Fraunces', serif;
+    font-size: 4rem;
+    font-weight: 500;
+    line-height: 0.9;
+    color: var(--gold);
+    letter-spacing: -0.04em;
+  }
+  .value-card-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .value-card-desc {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--slate);
+  }
+  .value-card-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0,0,0,0.06);
+  }
+  .value-card-stat {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+  }
+  .value-card-stat-label {
+    color: var(--slate);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .value-card-stat-val {
+    color: var(--ink);
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .value-card-quote {
+    border-left: 3px solid var(--gold);
+    padding: 0.6rem 1rem;
+    background: var(--paper);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 0.92rem;
+    color: var(--navy);
+    line-height: 1.4;
+    margin-top: auto;
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     SLIDE 6 — CLOSE / CTA
+  ══════════════════════════════════════════════════════════════════════════ */
+  #s6 {
+    background: var(--ink);
+    overflow: hidden;
+  }
+  .s6-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 50% 50%, rgba(200,155,60,0.18) 0%, transparent 50%),
+      radial-gradient(ellipse 90% 60% at 50% 100%, rgba(44,95,214,0.15) 0%, transparent 60%);
+  }
+  .s6-grain {
+    position: absolute; inset: 0;
+    opacity: 0.4;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .s6-content {
+    position: relative; z-index: 2;
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 4rem 5vw;
+  }
+
+  .s6-mark-row {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .s6-center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.5rem;
+    max-width: 1100px;
+  }
+  .s6-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+  .s6-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 500;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: var(--paper);
+  }
+  .s6-title em { font-style: italic; color: var(--gold); }
+
+  .s6-pricing {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 3rem;
+    align-items: center;
+    margin-top: 1rem;
+    padding: 2rem;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+  }
+  .pricing-amount {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .pricing-num {
+    font-family: 'Fraunces', serif;
+    font-size: 4rem;
+    font-weight: 600;
+    color: var(--gold);
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+  }
+  .pricing-period {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--slate-2);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .pricing-features {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .pricing-feature {
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.95rem;
+    color: var(--ice);
+  }
+  .pricing-feature::before {
+    content: '+';
+    color: var(--gold);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+  }
+
+  .s6-bottom {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .s6-pilot {
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem;
+    font-style: italic;
+    color: var(--paper);
+    font-weight: 500;
+  }
+  .s6-pilot em { color: var(--gold); }
+  .s6-meta-end {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--slate-2);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  /* ── Animations ──────────────────────────────────────────────────────── */
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .slide.active .stagger-1 { animation: rise 0.8s 0.1s forwards; opacity: 0; }
+  .slide.active .stagger-2 { animation: rise 0.8s 0.25s forwards; opacity: 0; }
+  .slide.active .stagger-3 { animation: rise 0.8s 0.4s forwards; opacity: 0; }
+  .slide.active .stagger-4 { animation: rise 0.8s 0.55s forwards; opacity: 0; }
+  .slide.active .stagger-5 { animation: rise 0.8s 0.7s forwards; opacity: 0; }
+  .slide.active .stagger-6 { animation: rise 0.8s 0.85s forwards; opacity: 0; }
+</style>
+</head>
+<body>
+
+<div class="deck">
+
+<!-- ══════════ SLIDE 1: TITLE ════════════════════════════════════════════════ -->
+<div class="slide active" id="s1">
+  <div class="s1-bg"></div>
+  <div class="s1-grid-bg"></div>
+  <div class="s1-grain"></div>
+  <div class="s1-content">
+    <div class="s1-top">
+      <div class="s1-mark">
+        <div class="s1-mark-glyph"></div>
+        <div class="s1-mark-text">GammaForge · Private Beta</div>
+      </div>
+      <div class="s1-meta">
+        Confidential<br>
+        For [Client Name]<br>
+        2026
+      </div>
+    </div>
+
+    <div class="s1-center">
+      <div class="s1-eyebrow">— The equity intelligence platform</div>
+      <h1 class="s1-title">
+        Eliminate the<br>
+        <em>mechanical work</em>.<br>
+        Multiply the value.
+      </h1>
+      <p class="s1-sub">
+        GammaForge automates 5–8 hours of OPM allocation, backsolve, scenario modeling,
+        and memo drafting per engagement — without changing how your team works.
+      </p>
+    </div>
+
+    <div class="s1-bottom">
+      <div class="s1-stats">
+        <div class="s1-stat">
+          <div class="s1-stat-num">&lt; 60s</div>
+          <div class="s1-stat-label">cap table to allocation</div>
+        </div>
+        <div class="s1-stat">
+          <div class="s1-stat-num">19</div>
+          <div class="s1-stat-label">methodologies built-in</div>
+        </div>
+        <div class="s1-stat">
+          <div class="s1-stat-num">100%</div>
+          <div class="s1-stat-label">runs inside excel</div>
+        </div>
+      </div>
+      <div class="s1-cta">Live demo on slide 03</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SLIDE 2: THE PROBLEM ═════════════════════════════════════════ -->
+<div class="slide" id="s2">
+  <div class="s2-content">
+    <div class="s2-divider-mark">→</div>
+
+    <div class="s2-left">
+      <div class="s2-section-label stagger-1">— Today</div>
+      <h2 class="s2-headline stagger-2">
+        Every engagement is <em>built<br>from scratch</em>.
+      </h2>
+      <div class="s2-list stagger-3">
+        <div class="s2-item">
+          <div class="s2-item-num">01</div>
+          <div class="s2-item-text">OPM model built from scratch</div>
+          <div class="s2-item-time">2–3 hrs</div>
+        </div>
+        <div class="s2-item">
+          <div class="s2-item-num">02</div>
+          <div class="s2-item-text">Backsolve via Goal Seek</div>
+          <div class="s2-item-time">45 min</div>
+        </div>
+        <div class="s2-item">
+          <div class="s2-item-num">03</div>
+          <div class="s2-item-text">Breakpoint descriptions written by hand</div>
+          <div class="s2-item-time">30 min</div>
+        </div>
+        <div class="s2-item">
+          <div class="s2-item-num">04</div>
+          <div class="s2-item-text">Methodology memo from blank doc</div>
+          <div class="s2-item-time">1–2 hrs</div>
+        </div>
+        <div class="s2-item">
+          <div class="s2-item-num">05</div>
+          <div class="s2-item-text">Review iterations & rebuilds</div>
+          <div class="s2-item-time">1–2 hrs</div>
+        </div>
+        <div class="s2-item">
+          <div class="s2-item-num">06</div>
+          <div class="s2-item-text">No durable audit trail</div>
+          <div class="s2-item-time">ongoing</div>
+        </div>
+      </div>
+      <div class="s2-total s2-total-red stagger-4">
+        <div class="s2-total-label">Total per engagement</div>
+        <div class="s2-total-val">5–8 hours</div>
+      </div>
+    </div>
+
+    <div class="s2-right">
+      <div class="s2-section-label stagger-2">— With GammaForge</div>
+      <h2 class="s2-headline stagger-3">
+        Same math.<br><em>One click</em>.
+      </h2>
+      <div class="s2-list stagger-4">
+        <div class="s2-item">
+          <div class="s2-item-num">01</div>
+          <div class="s2-item-text">OPM allocation matrix</div>
+          <div class="s2-item-time">&lt; 1 min</div>
+        </div>
+        <div class="s2-item">
+          <div class="s2-item-num">02</div>
+          <div class="s2-item-text">Backsolve to observed transaction</div>
+          <div class="s2-item-time">&lt; 1 min</div>
+        </div>
+        <div class="s2-item">
+          <div class="s2-item-num">03</div>
+          <div class="s2-item-text">Auto-generated breakpoint descriptions</div>
+          <div class="s2-item-time">instant</div>
+        </div>
+        <div class="s2-item">
+          <div class="s2-item-num">04</div>
+          <div class="s2-item-text">Word memo with 409A language</div>
+          <div class="s2-item-time">&lt; 1 min</div>
+        </div>
+        <div class="s2-item">
+          <div class="s2-item-num">05</div>
+          <div class="s2-item-text">PWERM, exit waterfall, pro-forma</div>
+          <div class="s2-item-time">instant</div>
+        </div>
+        <div class="s2-item">
+          <div class="s2-item-num">06</div>
+          <div class="s2-item-text">Timestamped audit trail, locked</div>
+          <div class="s2-item-time">automatic</div>
+        </div>
+      </div>
+      <div class="s2-total s2-total-green stagger-5">
+        <div class="s2-total-label">Total per engagement</div>
+        <div class="s2-total-val">Under 5 minutes</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SLIDE 3: INTERACTIVE OPM ENGINE ══════════════════════════════ -->
+<div class="slide" id="s3">
+  <div class="s3-content">
+    <div class="s3-header">
+      <div class="s3-title-block">
+        <div class="s3-eyebrow">— Live demo · 03</div>
+        <h2 class="s3-title">
+          Run an <em>actual OPM allocation</em><br>right here in this deck.
+        </h2>
+      </div>
+      <div class="s3-instruction">
+        EDIT THE CAP TABLE →<br>
+        CLICK <strong>RUN OPM</strong> →<br>
+        WATCH IT COMPUTE LIVE
+      </div>
+    </div>
+
+    <div class="s3-body">
+      <div class="s3-input-panel">
+        <div>
+          <div class="panel-label">Equity Value</div>
+          <div class="input-grid">
+            <label>Total Equity ($M)</label>
+            <input type="number" id="i-equity" value="200" min="50" max="2000" step="10">
+          </div>
+          <div class="input-grid">
+            <label>Volatility (%)</label>
+            <input type="number" id="i-vol" value="55" min="20" max="120" step="5">
+          </div>
+          <div class="input-grid">
+            <label>Term (yrs)</label>
+            <input type="number" id="i-term" value="3" min="1" max="7" step="0.5">
+          </div>
+          <div class="input-grid">
+            <label>Risk-Free (%)</label>
+            <input type="number" id="i-rf" value="4.5" min="0" max="10" step="0.1">
+          </div>
+        </div>
+
+        <div>
+          <div class="panel-label">Cap Table</div>
+          <div class="cap-table-input">
+            <div class="cap-row cap-row-header">
+              <div>Class</div>
+              <div>Shares (M)</div>
+              <div>LP / share</div>
+            </div>
+            <div class="cap-row">
+              <label>Series C</label>
+              <input type="number" id="c-sc-shares" value="8" min="0" step="0.5">
+              <input type="number" id="c-sc-lp" value="20" min="0" step="0.5">
+            </div>
+            <div class="cap-row">
+              <label>Series B</label>
+              <input type="number" id="c-sb-shares" value="12" min="0" step="0.5">
+              <input type="number" id="c-sb-lp" value="13" min="0" step="0.5">
+            </div>
+            <div class="cap-row">
+              <label>Series A</label>
+              <input type="number" id="c-sa-shares" value="18" min="0" step="0.5">
+              <input type="number" id="c-sa-lp" value="5" min="0" step="0.5">
+            </div>
+            <div class="cap-row">
+              <label>Common</label>
+              <input type="number" id="c-co-shares" value="32" min="0" step="0.5">
+              <input type="number" id="c-co-lp" value="0" min="0" step="0.5" disabled>
+            </div>
+          </div>
+        </div>
+
+        <button class="run-btn" id="run-opm">Run OPM</button>
+      </div>
+
+      <div class="s3-output-panel">
+        <div class="output-header">
+          <div class="output-title">Allocation Output</div>
+          <div class="output-runtime" id="runtime">— ms</div>
+        </div>
+
+        <div id="output-content">
+          <div class="output-empty">
+            Click <strong style="margin: 0 0.4rem; color: var(--blue);">Run OPM</strong>
+            to generate the live allocation
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SLIDE 4: INTERACTIVE EXIT WATERFALL ══════════════════════════ -->
+<div class="slide" id="s4">
+  <div class="s4-content">
+    <div class="s4-header">
+      <div>
+        <div class="s3-eyebrow" style="color: var(--gold);">— Live demo · 04</div>
+        <h2 class="s4-title">
+          Exit value at <em>any number</em>.<br>
+          See payouts in real-time.
+        </h2>
+      </div>
+      <div class="s3-instruction" style="color: var(--slate-2);">
+        DRAG THE SLIDER →<br>
+        WATERFALL UPDATES <strong style="color: var(--gold);">INSTANTLY</strong>
+      </div>
+    </div>
+
+    <div class="s4-body">
+      <div class="slider-section">
+        <div class="slider-header">
+          <div class="slider-label">Exit Value</div>
+          <div class="slider-value" id="exit-value">$300M</div>
+        </div>
+        <div class="slider-track">
+          <div class="slider-fill" id="slider-fill" style="width: 30%;"></div>
+        </div>
+        <input type="range" min="50" max="1500" value="300" step="10" class="slider-input" id="exit-slider">
+        <div class="slider-marks">
+          <span>$50M</span>
+          <span>$400M</span>
+          <span>$800M</span>
+          <span>$1.2B</span>
+          <span>$1.5B</span>
+        </div>
+      </div>
+
+      <div class="waterfall-section">
+        <div class="waterfall-table" id="waterfall-rows">
+          <!-- populated by JS -->
+        </div>
+
+        <div class="waterfall-totals">
+          <div class="total-card">
+            <div class="total-card-label">Preferred Total</div>
+            <div class="total-card-val gold" id="total-preferred">$0M</div>
+          </div>
+          <div class="total-card">
+            <div class="total-card-label">Common Total</div>
+            <div class="total-card-val sage" id="total-common">$0M</div>
+          </div>
+          <div class="total-card">
+            <div class="total-card-label">Common $/share</div>
+            <div class="total-card-val blue" id="common-pps">$0.00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SLIDE 5: VALUE & SCALE ════════════════════════════════════════ -->
+<div class="slide" id="s5">
+  <div class="s5-content">
+    <div class="s5-header">
+      <div class="s3-eyebrow">— Why it matters · 05</div>
+      <h1 class="s5-title">
+        Three ways GammaForge<br>
+        <em>creates real value</em>.
+      </h1>
+      <p class="s5-sub">
+        This isn't a productivity tool. It's infrastructure that turns valuation work
+        into a scalable, defensible, revenue-multiplying capability.
+      </p>
+    </div>
+
+    <div class="s5-grid">
+      <div class="value-card">
+        <div class="value-card-num">01</div>
+        <div class="value-card-title">Audit-Defensible by Design</div>
+        <div class="value-card-desc">
+          Every run timestamped and locked. Breakpoint descriptions auto-generated from cap table logic.
+          Methodology memo with correct 409A language. Sensitivity tables ready before reviewers ask.
+        </div>
+        <div class="value-card-stats">
+          <div class="value-card-stat">
+            <div class="value-card-stat-label">Audit prep time</div>
+            <div class="value-card-stat-val">−85%</div>
+          </div>
+          <div class="value-card-stat">
+            <div class="value-card-stat-label">Reviewer iterations</div>
+            <div class="value-card-stat-val">−60%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="value-card">
+        <div class="value-card-num">02</div>
+        <div class="value-card-title">Handles Real Complexity</div>
+        <div class="value-card-desc">
+          Multi-class cap tables. SAFEs at cap or discount. Anti-dilution (Full Ratchet, Broad WA, Narrow WA).
+          Dividend-bearing preferred. Multi-class basket backsolve. Pro-forma with circular reference math.
+        </div>
+        <div class="value-card-stats">
+          <div class="value-card-stat">
+            <div class="value-card-stat-label">Methodologies</div>
+            <div class="value-card-stat-val">19</div>
+          </div>
+          <div class="value-card-stat">
+            <div class="value-card-stat-label">DLOM methods</div>
+            <div class="value-card-stat-val">3</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="value-card">
+        <div class="value-card-num">03</div>
+        <div class="value-card-title">Scales Without Hiring</div>
+        <div class="value-card-desc">
+          Same team, more engagements. 5–8 hours per engagement back. That's 250–400 hours
+          per year per analyst — capacity for 15–25 additional deals at full billing rates.
+        </div>
+        <div class="value-card-stats">
+          <div class="value-card-stat">
+            <div class="value-card-stat-label">Hours saved / yr</div>
+            <div class="value-card-stat-val">250–400</div>
+          </div>
+          <div class="value-card-stat">
+            <div class="value-card-stat-label">Capacity uplift</div>
+            <div class="value-card-stat-val">+30%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SLIDE 6: CLOSE / CTA ═════════════════════════════════════════ -->
+<div class="slide" id="s6">
+  <div class="s6-bg"></div>
+  <div class="s6-grain"></div>
+  <div class="s6-content">
+    <div class="s6-mark-row">
+      <div class="s1-mark-glyph"></div>
+      <div class="s1-mark-text">GammaForge</div>
+    </div>
+
+    <div class="s6-center">
+      <div class="s6-eyebrow stagger-1">— The pitch · 06</div>
+      <h1 class="s6-title stagger-2">
+        One additional<br>
+        engagement per month<br>
+        <em>pays for the platform</em>.
+      </h1>
+
+      <div class="s6-pricing stagger-3">
+        <div class="pricing-amount">
+          <div class="pricing-num">$10K</div>
+          <div class="pricing-period">per month · flat</div>
+        </div>
+        <div class="pricing-features">
+          <div class="pricing-feature">Unlimited runs across all engagements</div>
+          <div class="pricing-feature">One firm-wide API key</div>
+          <div class="pricing-feature">All 19 methodologies included</div>
+          <div class="pricing-feature">Dedicated support during onboarding</div>
+          <div class="pricing-feature">Quarterly methodology updates</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="s6-bottom stagger-4">
+      <div class="s6-pilot">
+        <em>30-day pilot</em> on your live portfolio. No commitment.
+      </div>
+      <div class="s6-meta-end">END · 06 / 06</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- Navigation -->
+<nav class="nav">
+  <button class="nav-btn" onclick="changeSlide(-1)">←</button>
+  <div class="nav-dots">
+    <div class="nav-dot active" onclick="goTo(0)"></div>
+    <div class="nav-dot" onclick="goTo(1)"></div>
+    <div class="nav-dot" onclick="goTo(2)"></div>
+    <div class="nav-dot" onclick="goTo(3)"></div>
+    <div class="nav-dot" onclick="goTo(4)"></div>
+    <div class="nav-dot" onclick="goTo(5)"></div>
+  </div>
+  <button class="nav-btn" onclick="changeSlide(1)">→</button>
+  <span class="nav-counter" id="counter">01/06</span>
+</nav>
+
+<div class="hint">← → Navigate · F11 Fullscreen</div>
+
+<script>
+  // ═══ Navigation ═══════════════════════════════════════════════════════════
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.querySelectorAll('.nav-dot');
+  const counter = document.getElementById('counter');
+
+  function goTo(n) {
+    if (n === current) return;
+    slides[current].classList.remove('active');
+    slides[current].classList.add('exit');
+    setTimeout(() => slides[current].classList.remove('exit'), 700);
+    dots[current].classList.remove('active');
+    current = n;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+    counter.textContent = String(current + 1).padStart(2,'0') + '/06';
+  }
+
+  function changeSlide(dir) {
+    const next = (current + dir + slides.length) % slides.length;
+    goTo(next);
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') changeSlide(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   changeSlide(-1);
+  });
+
+  // ═══ Black-Scholes (for slide 3 OPM demo) ═════════════════════════════════
+  function normCDF(x) {
+    // Abramowitz & Stegun approximation
+    const a1=0.254829592, a2=-0.284496736, a3=1.421413741;
+    const a4=-1.453152027, a5=1.061405429, p=0.3275911;
+    const sign = x < 0 ? -1 : 1;
+    x = Math.abs(x) / Math.sqrt(2);
+    const t = 1.0 / (1.0 + p * x);
+    const y = 1.0 - (((((a5*t + a4)*t) + a3)*t + a2)*t + a1)*t * Math.exp(-x*x);
+    return 0.5 * (1.0 + sign*y);
+  }
+
+  function bsCall(S, K, T, r, sigma) {
+    if (K <= 0 || T <= 0 || sigma <= 0) return Math.max(S - K, 0);
+    const d1 = (Math.log(S/K) + (r + 0.5*sigma*sigma)*T) / (sigma*Math.sqrt(T));
+    const d2 = d1 - sigma*Math.sqrt(T);
+    return S*normCDF(d1) - K*Math.exp(-r*T)*normCDF(d2);
+  }
+
+  // ═══ SLIDE 3: Run OPM ═════════════════════════════════════════════════════
+  document.getElementById('run-opm').addEventListener('click', runOPM);
+
+  function runOPM() {
+    const btn = document.getElementById('run-opm');
+    btn.disabled = true;
+    btn.textContent = 'Running...';
+
+    const t0 = performance.now();
+
+    const E = parseFloat(document.getElementById('i-equity').value) * 1e6;
+    const sigma = parseFloat(document.getElementById('i-vol').value) / 100;
+    const T = parseFloat(document.getElementById('i-term').value);
+    const r = parseFloat(document.getElementById('i-rf').value) / 100;
+
+    const classes = [
+      { name: 'Series C', shares: parseFloat(document.getElementById('c-sc-shares').value)*1e6, lp: parseFloat(document.getElementById('c-sc-lp').value), seniority: 1 },
+      { name: 'Series B', shares: parseFloat(document.getElementById('c-sb-shares').value)*1e6, lp: parseFloat(document.getElementById('c-sb-lp').value), seniority: 2 },
+      { name: 'Series A', shares: parseFloat(document.getElementById('c-sa-shares').value)*1e6, lp: parseFloat(document.getElementById('c-sa-lp').value), seniority: 3 },
+      { name: 'Common',   shares: parseFloat(document.getElementById('c-co-shares').value)*1e6, lp: 0, seniority: 99 }
+    ];
+
+    // Build simplified breakpoints — LP tiers then conversion
+    const breakpoints = [];
+    let cumLP = 0;
+    classes.filter(c => c.lp > 0).forEach((cls, i) => {
+      const lpAmount = cls.shares * cls.lp;
+      breakpoints.push({
+        start: cumLP,
+        end: cumLP + lpAmount,
+        type: 'LP',
+        beneficiary: cls.name,
+        alloc: { [cls.name]: 1.0 }
+      });
+      cumLP += lpAmount;
+    });
+
+    // Add "all share pro-rata" upside breakpoint
+    const totalShares = classes.reduce((s, c) => s + c.shares, 0);
+    const proRataAlloc = {};
+    classes.forEach(cls => proRataAlloc[cls.name] = cls.shares / totalShares);
+    breakpoints.push({
+      start: cumLP,
+      end: cumLP * 10, // notional upside cap
+      type: 'Pro-rata',
+      beneficiary: 'All',
+      alloc: proRataAlloc
+    });
+
+    // Compute call options at each breakpoint boundary
+    const callPrices = breakpoints.map(bp => bsCall(E, bp.start, T, r, sigma));
+    callPrices.push(bsCall(E, breakpoints[breakpoints.length-1].end, T, r, sigma));
+
+    // Allocate value per class
+    const valueByClass = {};
+    classes.forEach(cls => valueByClass[cls.name] = 0);
+
+    breakpoints.forEach((bp, i) => {
+      const incrementalCall = callPrices[i] - callPrices[i+1];
+      Object.keys(bp.alloc).forEach(cls => {
+        valueByClass[cls] += incrementalCall * bp.alloc[cls];
+      });
+    });
+
+    // Compute per-share values
+    const results = classes.map(cls => {
+      const totalVal = valueByClass[cls.name];
+      const perShare = cls.shares > 0 ? totalVal / cls.shares : 0;
+      return {
+        name: cls.name,
+        shares: cls.shares,
+        totalValue: totalVal,
+        perShare: perShare
+      };
+    });
+
+    const totalAllocated = Object.values(valueByClass).reduce((s,v) => s+v, 0);
+    const commonResult = results.find(r => r.name === 'Common');
+
+    const t1 = performance.now();
+    const elapsed = Math.round(t1 - t0);
+
+    // Render
+    document.getElementById('runtime').textContent = elapsed + ' ms · success';
+
+    let html = `
+      <div class="output-summary">
+        <div class="summary-card">
+          <div class="summary-label">Equity Value</div>
+          <div class="summary-value blue">$${(E/1e6).toFixed(0)}M</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">Breakpoints</div>
+          <div class="summary-value">${breakpoints.length}</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">Common $/share</div>
+          <div class="summary-value gold">$${commonResult.perShare.toFixed(4)}</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">Total Allocated</div>
+          <div class="summary-value">$${(totalAllocated/1e6).toFixed(1)}M</div>
+        </div>
+      </div>
+      <div class="output-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Class</th>
+              <th>Shares (M)</th>
+              <th>Total Value ($M)</th>
+              <th>$ / share</th>
+              <th>% of Equity</th>
+            </tr>
+          </thead>
+          <tbody>
+    `;
+    results.forEach(res => {
+      html += `
+        <tr>
+          <td>${res.name}</td>
+          <td>${(res.shares/1e6).toFixed(1)}</td>
+          <td>$${(res.totalValue/1e6).toFixed(2)}</td>
+          <td class="${res.name==='Common' ? 'highlight' : ''}">$${res.perShare.toFixed(4)}</td>
+          <td>${(res.totalValue/totalAllocated*100).toFixed(1)}%</td>
+        </tr>
+      `;
+    });
+    html += `</tbody></table></div>`;
+
+    document.getElementById('output-content').innerHTML = html;
+
+    btn.disabled = false;
+    btn.textContent = 'Run OPM';
+  }
+
+  // ═══ SLIDE 4: Exit Waterfall ══════════════════════════════════════════════
+  const slider = document.getElementById('exit-slider');
+  const exitValueDisplay = document.getElementById('exit-value');
+  const sliderFill = document.getElementById('slider-fill');
+
+  // Sample cap table for waterfall demo
+  const waterfallCapTable = [
+    { name: 'Series D Preferred', shares: 5_000_000,  lpPerShare: 30,   seniority: 1, color: 'preferred' },
+    { name: 'Series C Preferred', shares: 8_000_000,  lpPerShare: 20,   seniority: 2, color: 'preferred' },
+    { name: 'Series B Preferred', shares: 12_000_000, lpPerShare: 13,   seniority: 3, color: 'preferred' },
+    { name: 'Series A Preferred', shares: 18_000_000, lpPerShare: 5,    seniority: 4, color: 'preferred' },
+    { name: 'Series Seed',        shares: 6_000_000,  lpPerShare: 0.5,  seniority: 5, color: 'preferred' },
+    { name: 'Common Stock',       shares: 32_000_000, lpPerShare: 0,    seniority: 99, color: 'common' },
+    { name: 'Options Pool',       shares: 18_000_000, lpPerShare: 0,    seniority: 99, color: 'common' },
+  ];
+
+  function computeWaterfall(exitValue) {
+    const result = [];
+
+    // Sort by seniority
+    const sorted = [...waterfallCapTable].sort((a,b) => a.seniority - b.seniority);
+
+    let remaining = exitValue;
+    const payouts = {};
+    waterfallCapTable.forEach(c => payouts[c.name] = 0);
+
+    // Pay liquidation preferences in order
+    for (const cls of sorted) {
+      if (cls.lpPerShare > 0) {
+        const lpDue = cls.shares * cls.lpPerShare;
+        const paid = Math.min(remaining, lpDue);
+        payouts[cls.name] += paid;
+        remaining -= paid;
+        if (remaining <= 0) break;
+      }
+    }
+
+    // Distribute residual pro-rata across all shares (assuming all preferred converts above LP)
+    if (remaining > 0) {
+      const totalShares = waterfallCapTable.reduce((s, c) => s + c.shares, 0);
+      waterfallCapTable.forEach(cls => {
+        payouts[cls.name] += (cls.shares / totalShares) * remaining;
+      });
+    }
+
+    return waterfallCapTable.map(cls => ({
+      ...cls,
+      payout: payouts[cls.name],
+      perShare: cls.shares > 0 ? payouts[cls.name] / cls.shares : 0
+    }));
+  }
+
+  function updateWaterfall() {
+    const exitValue = parseFloat(slider.value) * 1e6;
+    const exitDisplay = exitValue >= 1e9
+      ? `$${(exitValue/1e9).toFixed(2)}B`
+      : `$${Math.round(exitValue/1e6)}M`;
+    exitValueDisplay.textContent = exitDisplay;
+
+    const fillPct = ((slider.value - 50) / (1500 - 50)) * 100;
+    sliderFill.style.width = fillPct + '%';
+
+    const waterfall = computeWaterfall(exitValue);
+    const maxPayout = Math.max(...waterfall.map(w => w.payout), 1);
+
+    const totalPreferred = waterfall.filter(w => w.color === 'preferred').reduce((s,w) => s+w.payout, 0);
+    const totalCommon = waterfall.filter(w => w.color === 'common').reduce((s,w) => s+w.payout, 0);
+    const commonClass = waterfall.find(w => w.name === 'Common Stock');
+
+    let html = '';
+    waterfall.forEach(w => {
+      const widthPct = (w.payout / maxPayout) * 100;
+      const payoutDisplay = w.payout >= 1e9 ? `$${(w.payout/1e9).toFixed(2)}B` : `$${(w.payout/1e6).toFixed(1)}M`;
+      const pctDisplay = ((w.payout / exitValue) * 100).toFixed(1);
+      html += `
+        <div class="waterfall-row">
+          <div class="waterfall-class">${w.name}</div>
+          <div class="waterfall-bar-track">
+            <div class="waterfall-bar-fill ${w.color}" style="width: ${widthPct}%;"></div>
+          </div>
+          <div class="waterfall-payout">${payoutDisplay}</div>
+          <div class="waterfall-pct">${pctDisplay}%</div>
+        </div>
+      `;
+    });
+    document.getElementById('waterfall-rows').innerHTML = html;
+
+    document.getElementById('total-preferred').textContent =
+      totalPreferred >= 1e9 ? `$${(totalPreferred/1e9).toFixed(2)}B` : `$${(totalPreferred/1e6).toFixed(0)}M`;
+    document.getElementById('total-common').textContent =
+      totalCommon >= 1e9 ? `$${(totalCommon/1e9).toFixed(2)}B` : `$${(totalCommon/1e6).toFixed(0)}M`;
+    document.getElementById('common-pps').textContent =
+      commonClass ? `$${commonClass.perShare.toFixed(2)}` : '$0.00';
+  }
+
+  slider.addEventListener('input', updateWaterfall);
+  updateWaterfall(); // initial render
+</script>
+</body>
+</html>
