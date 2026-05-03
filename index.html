@@ -1576,49 +1576,41 @@
 
 </div>
 
-<!-- Navigation -->
-<nav class="nav">
-  <button class="nav-btn" onclick="changeSlide(-1)">←</button>
-  <div class="nav-dots">
-    <div class="nav-dot active" onclick="goTo(0)"></div>
-    <div class="nav-dot" onclick="goTo(1)"></div>
-    <div class="nav-dot" onclick="goTo(2)"></div>
-    <div class="nav-dot" onclick="goTo(3)"></div>
-    <div class="nav-dot" onclick="goTo(4)"></div>
-    <div class="nav-dot" onclick="goTo(5)"></div>
-  </div>
-  <button class="nav-btn" onclick="changeSlide(1)">→</button>
-  <span class="nav-counter" id="counter">01/06</span>
-</nav>
 
 <script>
   // ═══ Navigation ═══════════════════════════════════════════════════════════
-  let current = 0;
-  const slides = document.querySelectorAll('.slide');
-  const dots = document.querySelectorAll('.nav-dot');
-  const counter = document.getElementById('counter');
+// ═══ Navigation ═══════════════════════════════════════════════════════════
+let current = 0;
+const slides = document.querySelectorAll('.slide');
 
-  function goTo(n) {
-    if (n === current) return;
-    slides[current].classList.remove('active');
-    slides[current].classList.add('exit');
-    setTimeout(() => slides[current].classList.remove('exit'), 700);
-    dots[current].classList.remove('active');
-    current = n;
-    slides[current].classList.add('active');
-    dots[current].classList.add('active');
-    counter.textContent = String(current + 1).padStart(2,'0') + '/06';
+function goTo(n) {
+  if (n === current) return;
+
+  slides[current].classList.remove('active');
+  slides[current].classList.add('exit');
+
+  const oldSlide = slides[current];
+  setTimeout(() => oldSlide.classList.remove('exit'), 700);
+
+  current = n;
+
+  slides[current].classList.add('active');
+}
+
+function changeSlide(dir) {
+  const next = (current + dir + slides.length) % slides.length;
+  goTo(next);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+    changeSlide(1);
   }
 
-  function changeSlide(dir) {
-    const next = (current + dir + slides.length) % slides.length;
-    goTo(next);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    changeSlide(-1);
   }
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') changeSlide(1);
-    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   changeSlide(-1);
-  });
+});
 
   // ═══ Black-Scholes (for slide 3 OPM demo) ═════════════════════════════════
   function normCDF(x) {
