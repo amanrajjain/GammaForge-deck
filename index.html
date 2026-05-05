@@ -63,67 +63,6 @@
     transform: translateY(-2rem) scale(1.01);
   }
 
-  /* ── Nav ──────────────────────────────────────────────────────────────── */
-  .nav {
-    position: fixed;
-    bottom: 1.5rem; left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    z-index: 100;
-    background: rgba(10,14,26,0.85);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 100px;
-    padding: 0.5rem 1.4rem;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.05em;
-  }
-  .nav-btn {
-    background: none; border: none;
-    color: rgba(255,255,255,0.5);
-    cursor: pointer;
-    font-size: 1rem;
-    padding: 0.2rem 0.6rem;
-    transition: all 0.2s;
-    font-family: inherit;
-    border-radius: 50%;
-  }
-  .nav-btn:hover { color: white; background: rgba(255,255,255,0.08); }
-  .nav-dots {
-    display: flex; gap: 0.4rem;
-  }
-  .nav-dot {
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.2);
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-  .nav-dot.active {
-    background: var(--gold);
-    transform: scale(1.6);
-    box-shadow: 0 0 12px rgba(200,155,60,0.6);
-  }
-  .nav-counter {
-    color: rgba(255,255,255,0.4);
-    margin-left: 0.5rem;
-    min-width: 2.5rem;
-    text-align: center;
-  }
-  .hint {
-    position: fixed;
-    top: 1.5rem; right: 1.5rem;
-    color: rgba(255,255,255,0.18);
-    font-size: 0.65rem;
-    font-family: 'JetBrains Mono', monospace;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    z-index: 100;
-  }
-
   /* ══════════════════════════════════════════════════════════════════════════
      SLIDE 1 — TITLE / EDITORIAL COVER
   ══════════════════════════════════════════════════════════════════════════ */
@@ -1677,8 +1616,7 @@
         Multiply the value.
       </h1>
       <p class="s1-sub">
-        GammaForge automates 5–8 hours of OPM allocation, backsolve, scenario modeling,
-        and memo drafting per engagement — without changing how your team works.
+        GammaForge lets you take on more work without changing how your team works — while improving consistency, reviewability, and audit support, saving 12–16 hours of OPM allocation, backsolve, scenario modeling, and memo drafting per engagement.
       </p>
     </div>
 
@@ -1716,7 +1654,7 @@
         <div class="s2-item">
           <div class="s2-item-num">01</div>
           <div class="s2-item-text">OPM model built from scratch</div>
-          <div class="s2-item-time">2–3 hrs</div>
+          <div class="s2-item-time">6–8 hrs</div>
         </div>
         <div class="s2-item">
           <div class="s2-item-num">02</div>
@@ -1726,7 +1664,7 @@
         <div class="s2-item">
           <div class="s2-item-num">03</div>
           <div class="s2-item-text">Breakpoint descriptions written by hand</div>
-          <div class="s2-item-time">30 min</div>
+          <div class="s2-item-time">3-5 hrs</div>
         </div>
         <div class="s2-item">
           <div class="s2-item-num">04</div>
@@ -1746,7 +1684,7 @@
       </div>
       <div class="s2-total s2-total-red stagger-4">
         <div class="s2-total-label">Total per engagement</div>
-        <div class="s2-total-val">5–8 hours</div>
+        <div class="s2-total-val">12–16 hours</div>
       </div>
     </div>
 
